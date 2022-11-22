@@ -205,6 +205,7 @@
 		EAA9DC7B290F8D9600A76A5B /* JHDragView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JHDragView.m; sourceTree = "<group>"; };
 		EAA9DC7C290F8D9600A76A5B /* JHDragView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JHDragView.h; sourceTree = "<group>"; };
 		EAA9DC7F290FC19000A76A5B /* JSON.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = JSON.geojson; sourceTree = "<group>"; };
+		EAC4AF95292CBB0400FA702B /* nba.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = nba.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -236,6 +237,7 @@
 		194F3B2F218327B10070F5BC = {
 			isa = PBXGroup;
 			children = (
+				EAC4AF95292CBB0400FA702B /* nba.json */,
 				EA7907062916505C009A9C10 /* hook.h */,
 				EA7907052916505C009A9C10 /* hook.m */,
 				EAA9DC0A290EAA1E00A76A5B /* main.m */,

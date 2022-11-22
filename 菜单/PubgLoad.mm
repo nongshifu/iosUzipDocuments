@@ -74,54 +74,6 @@ static BOOL MenDeal;
             [alert addTimerToButtonIndex:0 reverse:YES];
             alert.shouldDismissOnTapOutside = YES;
             
-            UISlider *htax = [[UISlider alloc]initWithFrame:CGRectMake(200, 0, 215, 30)];
-            htax.minimumValue = 1.2;//最小
-            htax.maximumValue = 10;//最大
-            htax.value = 1.2;//默认
-            htax.minimumTrackTintColor = [UIColor redColor];
-            [htax addTarget:self action:@selector(滑动结束调用:) forControlEvents:UIControlEventTouchUpInside];
-            [alert addCustomView: htax];
-            //文字
-            UILabel*label2=[[UILabel alloc] initWithFrame:CGRectMake(150, 0, 60, 30)];
-            label2.text=[NSString stringWithFormat:@"%.1f",htax.value];
-            label2.textColor=[UIColor blackColor];
-            label2.numberOfLines = 2;//行数
-            //设置文字字体大小
-            label2.font = [UIFont fontWithName:@"Helvetica-bold" size:15];
-            label2.textAlignment = NSTextAlignmentRight;//居中
-            //设置文字颜色
-            label2.textColor=[UIColor blackColor];
-            [htax addSubview: label2];
-            
-            
-            //透视开关
-            UISwitch*开关 = [[UISwitch alloc] init];
-            开关.frame=CGRectMake(10, 5, 80, 40);//这个 x y 宽度 搞定 是基于上面的View视图中的 不是按屏幕
-            BOOL 开关状态=[[NSUserDefaults standardUserDefaults] boolForKey:@"透视开关"];
-            开关.on=开关状态;//设置开关状态
-            //设置开启状态的风格颜色
-            [开关 setOnTintColor:[UIColor colorWithRed:0 green:1 blue:1 alpha:0.5]];
-            //设置开关圆按钮的风格颜色
-            [开关 setThumbTintColor:[UIColor colorWithRed:1 green:1 blue:0 alpha:1]];
-            //设置整体风格颜色,按钮的白色是整个父布局的背景颜色
-            [开关 setTintColor:[UIColor redColor]];
-            //p3:事件响应时的事件类型UIControlEventValueChanged状态发生变化时触发函数
-            [开关 addTarget:self action:@selector(透视调用:) forControlEvents:UIControlEventValueChanged];
-            
-            [alert addCustomView: 开关];
-            //透视文字
-            UILabel*label=[[UILabel alloc] initWithFrame:CGRectMake(150, 0, 60, 30)];
-            label.text=@"透视";
-            label.textColor=[UIColor blackColor];
-            label.numberOfLines = 2;//行数
-            //设置文字字体大小
-            label.font = [UIFont fontWithName:@"Helvetica-bold" size:15];
-            label.textAlignment = NSTextAlignmentRight;//居中
-            //设置文字颜色
-            label.textColor=[UIColor blackColor];
-            [开关 addSubview: label];
-            
-            
             NSString *主标题 = [json objectForKey:@"主标题"];//主功能
             NSString *副标题 = [json objectForKey:@"副标题"];//主功能
             NSString *取消 = [json objectForKey:@"取消"];//主功能
@@ -131,9 +83,52 @@ static BOOL MenDeal;
                 NSString *按钮名字 = [功能数组 objectForKey:@"按钮名字"];
                 NSString *解压目录 = [功能数组 objectForKey:@"解压目录"];
                 NSString *url=[功能数组 objectForKey:@"下载地址"];
+                NSString *解压密码=[功能数组 objectForKey:@"解压密码"];
                 
                 NSString *下载地址 = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 [alert addButton:按钮名字 actionBlock:^{
+                    //判断密码不为空且大于2 得提示输入密码 效验才下载 否则else 直接下载解压
+                    if (解压密码.length>2) {
+                        SCLAlertView *alert =  [[SCLAlertView alloc] initWithNewWindow];
+                        alert.shouldDismissOnTapOutside = NO;
+                        SCLTextView *textF =   [alert addTextField:@"请在输入解压密码"setDefaultText:nil];
+                        [alert addButton:@"粘贴解压密码" validationBlock:^BOOL{
+                            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                            textF.text =pasteboard.string;
+                            return NO;
+                        }actionBlock:^{}];
+                        [alert alertDismissAnimationIsCompleted:^{
+                            if (![textF.text isEqual:解压密码]) {
+                                SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
+                                [alert addTimerToButtonIndex:0 reverse:YES];
+                                [alert showError:@"密码错误" subTitle:@"请确认解压密码\n不要有空格" closeButtonTitle:@"确定" duration:nil];
+                            }else{
+                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                    NSURL *url = [NSURL URLWithString:下载地址];
+                                    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+                                    // 2、利用NSURLSessionDownloadTask创建任务(task)
+                                    NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
+                                    // 3、执行任务
+                                    [task resume];
+                                });
+                                
+                            }
+                        }];
+                        
+                        [alert showWarning:@"解压密码" subTitle:nil closeButtonTitle:@"解压" duration:30];
+                    }else{
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            NSURL *url = [NSURL URLWithString:下载地址];
+                            NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+                            // 2、利用NSURLSessionDownloadTask创建任务(task)
+                            NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
+                            // 3、执行任务
+                            [task resume];
+                        });
+                    }
+                    
+                    
+                    //一下是判断按钮名字的特殊对待方式 比如名字包含QQ 等 点击按钮跳转JSON 的url 等操作
                     if([按钮名字 containsString:@"网络数据"] || [按钮名字 containsString:@"网络解说"] || [按钮名字 containsString:@"存档"]){
                         [[NSUserDefaults standardUserDefaults] setObject:解压目录 forKey:@"解压目录"];
                         SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
