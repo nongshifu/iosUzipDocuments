@@ -1,22 +1,22 @@
 #import <Foundation/Foundation.h>
 
 //全局服务器地址
-#define  BSPHP_HOST  @"https://dsfdsf71179819b44de0d051823b9"
+#define  BSPHP_HOST  @"https://dke.ios668.cn/AppEn.php?appid=22222222&m=edffdb27471179819b44de0d051823b9"
 //通信key
-#define BSPHP_MUTUALKEY @"5fe364asfa4d2273b21bdb"
+#define BSPHP_MUTUALKEY @"5fe364aad5d20deff8ba4d2273b21bdb"
 //数据加密密码
-#define BSPHP_PASSWORD @"XS8dsfhYuRz"
+#define BSPHP_PASSWORD @"XS8dypmzpZ7iphYuRz"
 //接收Sgin验证 注意必须填写 并且有[KEY]
-#define BSPHP_INSGIN @"[KEY]GFsfFGN"
+#define BSPHP_INSGIN @"[KEY]GFGSNHGRFGN"
 //输出Sgin验证 注意必须填写 并且有[KEY]
-#define BSPHP_TOSGIN @"[KEY]JHsfFG"
+#define BSPHP_TOSGIN @"[KEY]JHSEGFGRQFG"
 //版本 和软件配置版本号一致 发布新版的时候 修改软件配置的版本号并且在URL那填写下载地址即可 客户端会弹出更新 确定会跳转浏览器下载
 #define JN_VERSION @"v1.0"
 
 //加密秘钥 这个在服务器文件后台 网站目录/include/applibapi/encryption下的bsphp_3des_vi.php 里面保持一致 搜索bsphp666就有3处地方都改掉 和这里源码一致
-#define gIv   @"bssf6sf6"
+#define gIv   @"bsphp666"
 //悬浮图标地址
-#define tubdizhi  @"https://dsf68.cn/IMG_5757.PNG"
+#define tubdizhi  @"https://dke.ios668.cn/IMG_5757.PNG"
 
 /*以下5个 参数 填写在BSPHP后台对应的软件设置-软件描述处 每个功能一个换行 切记 参数为BOOL 值 YES 或NO 大写 顺序不能错源码写死了
 到期时间弹窗:YES
@@ -34,7 +34,7 @@
  验证机器码是否是000:YES 设YES的话 上面第二个参数 验证udid还是idfa:NO 设置 为NO 仅对IDFA判断是否正常获取 系统设置-隐私-跟踪 没开启的话获取00000-
  */
 //如果使用udid获取描述文件 需要udid.php上传到域名指定目录
-#define  UDID_HOST  @"https://ios.wesfnt.com/udid/"
+#define  UDID_HOST  @"https://ios.weiyicent.com/udid/"
 
 @interface NetTool : NSObject
 

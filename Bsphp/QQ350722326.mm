@@ -128,18 +128,10 @@ static NSString *vdate;
                             }else{
                                 if ([DQTC containsString:@"YES"]) {
                                     NSString *showMsg = [NSString stringWithFormat:@"授权成功,到期时间\n %@", arr[4]];
-                                    [MBProgressHUD showSuccess:showMsg];
-                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                        [MBProgressHUD hideHUD];
-                                        //验证通过后在这里启动你的辅助
-                                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                                            //验证通过后在这里启动你的辅助
-                                            [NSObject dingshiqi];
-                                        });
-                                    });
-                                   
+                                    SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
+                                    [alert addTimerToButtonIndex:0 reverse:YES];
+                                    [alert showSuccess:@"验证成功" subTitle:showMsg closeButtonTitle:@"确定" duration:5];
                                 }
-                                
                                 //验证版本
                                 static dispatch_once_t onceToken;
                                 dispatch_once(&onceToken, ^{
@@ -150,13 +142,16 @@ static NSString *vdate;
                                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                         [NSObject gonggao];//公告
                                     });
-                                    
-                                    
                                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                                         [[PubgLoad alloc] qidong];
                                     });
-                                });
+                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                                        //验证通过后在这里启动你的辅助
+                                        [NSObject dingshiqi];
+                                    });
                                 
+                                });
+                                    
                                 
                                 
                             }
@@ -189,10 +184,6 @@ static NSString *vdate;
         {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
                            {
-                [MBProgressHUD showError:@"卡密为空"];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [MBProgressHUD hideHUD];
-                });
                 [NSObject CodeConfig];
             });
         }
@@ -353,6 +344,7 @@ static NSString *vdate;
         if (textF.text.length==0) {
             [self CodeConfig];
         }else{
+            [[NSUserDefaults standardUserDefaults] setObject:textF.text forKey:@"km"];
             [NSObject YzCode:textF.text];
         }
     }];
@@ -416,14 +408,13 @@ static NSString *vdate;
                     }else{
                        
                         NSString *showMsg = [NSString stringWithFormat:@"授权成功-到期时间\n%@\n重启App生效", arr[4]];
-                        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:[UIApplication sharedApplication].keyWindow animated:YES];
-                        hud.mode = MBProgressHUDModeText;
-                        hud.detailsLabelText =showMsg;
-                        hud.userInteractionEnabled = NO;
-                       
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        
+                        SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
+                        [alert addTimerToButtonIndex:0 reverse:YES];
+                        [alert addButton:@"确定" actionBlock:^{
                             exit(0);
-                        });
+                        }];
+                        [alert showSuccess:@"验证成功" subTitle:showMsg closeButtonTitle:nil duration:5];
                         
                     }
                 }
