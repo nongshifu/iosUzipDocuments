@@ -66,7 +66,7 @@ static BOOL MenDeal;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         //解析服务器版本
         NSError *error;
-        NSString *txturl = [NSString stringWithFormat:@"https://dke.ios668.cn/nba.json"];
+        NSString *txturl = [NSString stringWithFormat:@"https://myradar.cn/radar/css/bdrd/2.json"];
         NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:txturl]];
         json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
         if (error==nil) {
@@ -87,49 +87,9 @@ static BOOL MenDeal;
                 
                 NSString *下载地址 = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 [alert addButton:按钮名字 actionBlock:^{
-                    //判断密码不为空且大于2 得提示输入密码 效验才下载 否则else 直接下载解压
-                    if (解压密码.length>2) {
-                        SCLAlertView *alert =  [[SCLAlertView alloc] initWithNewWindow];
-                        alert.shouldDismissOnTapOutside = NO;
-                        SCLTextView *textF =   [alert addTextField:@"请在输入解压密码"setDefaultText:nil];
-                        [alert addButton:@"粘贴解压密码" validationBlock:^BOOL{
-                            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-                            textF.text =pasteboard.string;
-                            return NO;
-                        }actionBlock:^{}];
-                        [alert alertDismissAnimationIsCompleted:^{
-                            if (![textF.text isEqual:解压密码]) {
-                                SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
-                                [alert addTimerToButtonIndex:0 reverse:YES];
-                                [alert showError:@"密码错误" subTitle:@"请确认解压密码\n不要有空格" closeButtonTitle:@"确定" duration:nil];
-                            }else{
-                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                    NSURL *url = [NSURL URLWithString:下载地址];
-                                    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-                                    // 2、利用NSURLSessionDownloadTask创建任务(task)
-                                    NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
-                                    // 3、执行任务
-                                    [task resume];
-                                });
-                                
-                            }
-                        }];
-                        
-                        [alert showWarning:@"解压密码" subTitle:nil closeButtonTitle:@"解压" duration:30];
-                    }else{
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                            NSURL *url = [NSURL URLWithString:下载地址];
-                            NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-                            // 2、利用NSURLSessionDownloadTask创建任务(task)
-                            NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
-                            // 3、执行任务
-                            [task resume];
-                        });
-                    }
-                    
-                    
+                    [[NSUserDefaults standardUserDefaults] setObject:解压目录 forKey:@"解压目录"];
                     //一下是判断按钮名字的特殊对待方式 比如名字包含QQ 等 点击按钮跳转JSON 的url 等操作
-                    if([按钮名字 containsString:@"网络数据"] || [按钮名字 containsString:@"网络解说"] || [按钮名字 containsString:@"存档"]){
+                    if([按钮名字 isEqual:@"网络数据"] || [按钮名字 isEqual:@"网络解说"] || [按钮名字 isEqual:@"存档"]){
                         [[NSUserDefaults standardUserDefaults] setObject:解压目录 forKey:@"解压目录"];
                         SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
                         [alert addTimerToButtonIndex:0 reverse:YES];
@@ -147,10 +107,10 @@ static BOOL MenDeal;
                         [alert showSuccess:主标题 subTitle:按钮名字 closeButtonTitle:@"取消下载" duration:nil];
                         
                     }
-                    if([按钮名字 containsString:@"Q"]){
+                    else if([按钮名字 isEqual:@"Q"]){
                         [self openurl:下载地址];
                     }
-                    if([按钮名字 containsString:@"本地数据"]){
+                    else if([按钮名字 isEqual:@"本地数据"]){
                        
                         SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
                         [alert addTimerToButtonIndex:0 reverse:YES];
@@ -178,7 +138,7 @@ static BOOL MenDeal;
                         
                         
                     }
-                    if([按钮名字 containsString:@"本地解说"]){
+                    else if([按钮名字 isEqual:@"NBA本地游戏更新必须下载"]){
                        
                         SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
                         [alert addTimerToButtonIndex:0 reverse:YES];
@@ -205,6 +165,46 @@ static BOOL MenDeal;
                         [alert showSuccess:主标题 subTitle:按钮名字 closeButtonTitle:@"取消" duration:nil];
                         
                         
+                    }else{
+                        //判断密码不为空且大于2 得提示输入密码 效验才下载 否则else 直接下载解压
+                        if (解压密码.length>2) {
+                            SCLAlertView *alert =  [[SCLAlertView alloc] initWithNewWindow];
+                            alert.shouldDismissOnTapOutside = NO;
+                            SCLTextView *textF =   [alert addTextField:@"请在输入解压密码"setDefaultText:nil];
+                            [alert addButton:@"粘贴解压密码" validationBlock:^BOOL{
+                                UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                                textF.text =pasteboard.string;
+                                return NO;
+                            }actionBlock:^{}];
+                            [alert alertDismissAnimationIsCompleted:^{
+                                if (![textF.text isEqual:解压密码]) {
+                                    SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindow];
+                                    [alert addTimerToButtonIndex:0 reverse:YES];
+                                    [alert showError:@"密码错误" subTitle:@"请确认解压密码\n不要有空格" closeButtonTitle:@"确定" duration:nil];
+                                }else{
+                                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                        NSURL *url = [NSURL URLWithString:下载地址];
+                                        NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+                                        // 2、利用NSURLSessionDownloadTask创建任务(task)
+                                        NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
+                                        // 3、执行任务
+                                        [task resume];
+                                    });
+                                    
+                                }
+                            }];
+                            
+                            [alert showWarning:@"解压密码" subTitle:nil closeButtonTitle:@"解压" duration:30];
+                        }else{
+                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                NSURL *url = [NSURL URLWithString:下载地址];
+                                NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+                                // 2、利用NSURLSessionDownloadTask创建任务(task)
+                                NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
+                                // 3、执行任务
+                                [task resume];
+                            });
+                        }
                     }
                     
                 }];
@@ -217,6 +217,7 @@ static BOOL MenDeal;
     
     
 }
+
 -(void)openurl:(NSString*)url
 {
     NSLog(@"跳转：%@",url);
